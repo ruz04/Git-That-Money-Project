@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>SDOC Control Tower</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --ink: #101826;
+          --ink-soft: #1B2636;
+          --paper: #EDEFEC;
+          --paper-card: #FFFFFF;
+          --line: #D8DBD6;
+          --text: #17202B;
+          --text-dim: #5B6472;
+          --steel: #8B99AC;
+          --amber: #D9902E;
+          --amber-soft: #F6E6CB;
+          --teal: #3E8574;
+          --teal-soft: #DCEEE9;
+          --rust: #B8543C;
+          --rust-soft: #F3DED7;
+          --slate: #6B7684;
+          --slate-soft: #E5E8EA;
+          --radius: 6px;
+          --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+          --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        :root:not([data-theme="light"]) {
+          /* dark-mode overrides applied only if the viewer's system prefers dark */
+        }
+        @media (prefers-color-scheme: dark) {
+          :root:not([data-theme="light"]) {
+            --ink: #0A0F17;
+            --ink-soft: #141E2C;
+            --paper: #12161C;
+            --paper-card: #1A2029;
+            --line: #2A323D;
+            --text: #E7EAEE;
+            --text-dim: #9AA5B1;
+            --steel: #7C8AA0;
+            --amber-soft: #3A2E17;
+            --teal-soft: #16302A;
+            --rust-soft: #3A211B;
+            --slate-soft: #232A33;
+          }
+        }
+        :root[data-theme="dark"] {
+          --ink: #0A0F17;
+          --ink-soft: #141E2C;
+          --paper: #12161C;
+          --paper-card: #1A2029;
+          --line: #2A323D;
+          --text: #E7EAEE;
+          --text-dim: #9AA5B1;
+          --steel: #7C8AA0;
+          --amber-soft: #3A2E17;
+          --teal-soft: #16302A;
+          --rust-soft: #3A211B;
+          --slate-soft: #232A33;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+        html, body { height: 100%; }
+        body {
+          margin: 0;
+          background: var(--paper);
+          color: var(--text);
+          font-family: var(--font-body);
+          padding-top: env(safe-area-inset-top, 0px);
+          padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        .shell { display: flex; min-height: 100%; }
+
+        /* ---------- sidebar / control tower rail ---------- */
+        .rail {
+          flex: 0 0 232px;
+          background: var(--ink);
+          color: #DCE2E8;
+          padding: 22px 14px 22px 18px;
+          position: sticky;
+          top: env(safe-area-inset-top, 0px);
+          height: 100vh;
+          overflow-y: auto;
+        }
+        .rail-brand { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+        .rail-brand .mark { font-size: 20px; }
+        .rail-brand h1 {
+          font-family: var(--font-display);
+          font-size: 18px;
+          font-weight: 600;
+          margin: 0;
+          letter-spacing: 0.2px;
+        }
+        .rail-sub { font-size: 11.5px; color: #8090A3; margin: 0 0 22px; }
+
+        .rail-group { margin-bottom: 18px; }
+        .rail-label { font-size: 11px; color: #6E7C8E; margin: 0 0 6px 8px; }
+        .rail-btn {
+          display: flex; align-items: center; justify-content: space-between;
+          width: 100%; text-align: left; background: none; border: none;
+          color: #C4CCD6; font-family: var(--font-body); font-size: 13.5px;
+          padding: 7px 8px; border-radius: var(--radius); cursor: pointer;
+          margin-bottom: 1px;
+        }
+        .rail-btn:hover { background: rgba(255,255,255,0.06); }
+        .rail-btn.active { background: rgba(255,255,255,0.11); color: #fff; font-weight: 500; }
+        .rail-btn .count {
+          font-family: var(--font-body); font-size: 11px; color: #8090A3;
+          background: rgba(255,255,255,0.07); padding: 1px 6px; border-radius: 999px;
+        }
+        .rail-btn.active .count { background: rgba(255,255,255,0.16); color: #fff; }
+        .rail-btn .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; flex-shrink:0; }
+
+        /* ---------- main ---------- */
+        .main { flex: 1; min-width: 0; padding: 24px 28px 60px; }
+        .topbar {
+          display: flex; align-items: flex-end; justify-content: space-between;
+          gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
+        }
+        .topbar h2 { font-family: var(--font-display); font-size: 24px; margin: 0; font-weight: 600; }
+        .topbar p { margin: 2px 0 0; color: var(--text-dim); font-size: 13.5px; }
+
+        .loaders { display: flex; gap: 8px; flex-wrap: wrap; }
+        .loader-btn {
+          font-family: var(--font-body); font-size: 12.5px; font-weight: 500;
+          background: var(--paper-card); border: 1px solid var(--line); color: var(--text);
+          padding: 7px 12px; border-radius: var(--radius); cursor: pointer;
+          display: flex; align-items: center; gap: 6px;
+        }
+        .loader-btn:hover { border-color: var(--steel); }
+        .loader-btn.loaded { border-color: var(--teal); color: var(--teal); }
+        .loader-btn input { display: none; }
+        .loader-btn .tick { display: none; }
+        .loader-btn.loaded .tick { display: inline; }
+
+        /* ---------- manifest summary strip ---------- */
+        .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 22px; }
+        .summary .cell { background: var(--paper-card); padding: 14px 16px; }
+        .summary .num { font-family: var(--font-display); font-size: 26px; font-weight: 600; line-height: 1; }
+        .summary .lbl { font-size: 11.5px; color: var(--text-dim); margin-top: 5px; }
+        .summary .cell.amber .num { color: var(--amber); }
+        .summary .cell.rust .num { color: var(--rust); }
+        .summary .cell.teal .num { color: var(--teal); }
+
+        /* ---------- search + list ---------- */
+        .search { margin-bottom: 12px; }
+        .search input {
+          width: 100%; max-width: 420px; font-family: var(--font-body); font-size: 13.5px;
+          padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius);
+          background: var(--paper-card); color: var(--text);
+        }
+
+        .empty {
+          border: 1px dashed var(--line); border-radius: var(--radius);
+          padding: 36px 20px; text-align: center; color: var(--text-dim); font-size: 13.5px;
+        }
+        .empty strong { color: var(--text); display: block; margin-bottom: 4px; font-size: 14.5px; }
+
+        .row {
+          background: var(--paper-card); border: 1px solid var(--line); border-left: 3px solid var(--slate);
+          border-radius: var(--radius); padding: 11px 14px; margin-bottom: 7px; cursor: pointer;
+        }
+        .row.status-MISMATCH { border-left-color: var(--rust); }
+        .row.status-NEEDS_REVIEW { border-left-color: var(--amber); }
+        .row.status-OK { border-left-color: var(--teal); }
+        .row-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .row-id { font-family: var(--font-body); font-size: 11.5px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+        .row-subject { font-size: 13.5px; font-weight: 500; flex: 1; min-width: 160px;
+          overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .badge {
+          font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+          letter-spacing: 0.2px; white-space: nowrap;
+        }
+        .badge.cat { background: var(--slate-soft); color: var(--slate); }
+        .badge.OK { background: var(--teal-soft); color: var(--teal); }
+        .badge.MISMATCH { background: var(--rust-soft); color: var(--rust); }
+        .badge.NEEDS_REVIEW { background: var(--amber-soft); color: var(--amber); }
+        .badge.urgent { background: var(--rust-soft); color: var(--rust); }
+        .row-meta { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
+        .tag { font-size: 11px; color: var(--text-dim); background: var(--slate-soft); padding: 1px 7px; border-radius: 4px; }
+
+        .detail { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 13px; display: none; }
+        .row.open .detail { display: block; }
+        .detail p { margin: 4px 0; color: var(--text-dim); }
+        .detail .from { color: var(--text); }
+        .detail pre { white-space: pre-wrap; font-family: var(--font-body); font-size: 12.5px; color: var(--text); background: var(--paper); padding: 8px 10px; border-radius: 4px; margin: 6px 0 0; max-height: 220px; overflow-y: auto; }
+
+        .hint { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+        /* ---------- diagnostics ---------- */
+        .diag-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; margin-bottom: 20px; }
+        .diag-card { background: var(--paper-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+        .diag-card h4 { margin: 0 0 10px; font-size: 12.5px; color: var(--text-dim); font-weight: 600; }
+        .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12.5px; }
+        .bar-row .bl { width: 108px; flex-shrink: 0; color: var(--text-dim); }
+        .bar-row .bwrap { flex: 1; background: var(--slate-soft); border-radius: 3px; height: 8px; overflow: hidden; }
+        .bar-row .bfill { height: 100%; border-radius: 3px; }
+        .bar-row .bn { width: 34px; text-align: right; font-variant-numeric: tabular-nums; color: var(--text-dim); }
+
+        .score-big { font-family: var(--font-display); font-size: 40px; font-weight: 600; line-height: 1; }
+        .score-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+        table.diff { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+        table.diff th { text-align: left; color: var(--text-dim); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+        table.diff td { padding: 6px 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+        table.diff tr:hover td { background: var(--slate-soft); }
+
+        /* ---------- architecture / AI+cloud panel ---------- */
+        .arch-section { background: var(--paper-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 14px; }
+        .arch-section h4 { font-family: var(--font-display); font-size: 15px; margin: 0 0 4px; }
+        .arch-section .arch-note { font-size: 12px; color: var(--text-dim); margin: 0 0 12px; }
+        .arch-row { display: flex; gap: 14px; padding: 8px 0; border-top: 1px solid var(--line); align-items: baseline; flex-wrap: wrap; }
+        .arch-row:first-of-type { border-top: none; }
+        .arch-row .k { width: 150px; flex-shrink: 0; font-size: 12.5px; color: var(--text-dim); }
+        .arch-row .v { flex: 1; font-size: 13.5px; }
+        .arch-row .v[contenteditable="true"] { outline: none; border-bottom: 1px dashed var(--line); padding-bottom: 1px; }
+        .arch-row .v[contenteditable="true"]:focus { border-bottom-color: var(--amber); }
+        .arch-badge { display: inline-block; font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--teal-soft); color: var(--teal); margin-right: 6px; }
+
+        @media (max-width: 760px) {
+          .shell { flex-direction: column; }
+          .rail { position: static; height: auto; flex: none; width: 100%; padding-bottom: 10px; }
+          .main { padding: 18px 16px 50px; }
+          .summary { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+<div class="shell">
+
+    <nav class="rail">
+        <div class="rail-brand"><span class="mark">🚢</span><h1>SDOC Control Tower</h1></div>
+        <p class="rail-sub">Shipping-doc inbox triage &amp; review</p>
+
+        <div class="rail-group">
+            <p class="rail-label">Queue</p>
+            <button class="rail-btn active" data-tab="all"><span><span class="dot" style="background:var(--steel)"></span>All emails</span><span class="count" id="cnt-all">0</span></button>
+            <button class="rail-btn" data-tab="urgent"><span><span class="dot" style="background:var(--rust)"></span>Urgent</span><span class="count" id="cnt-urgent">0</span></button>
+            <button class="rail-btn" data-tab="review"><span><span class="dot" style="background:var(--amber)"></span>Needs review</span><span class="count" id="cnt-review">0</span></button>
+        </div>
+
+        <div class="rail-group">
+            <p class="rail-label">By category</p>
+            <button class="rail-btn" data-tab="cat-BL_COMPARISON"><span>BL comparison</span><span class="count" id="cnt-cat-BL_COMPARISON">0</span></button>
+            <button class="rail-btn" data-tab="cat-SI_REQUEST"><span>SI request</span><span class="count" id="cnt-cat-SI_REQUEST">0</span></button>
+            <button class="rail-btn" data-tab="cat-INVOICE_QUERY"><span>Invoice query</span><span class="count" id="cnt-cat-INVOICE_QUERY">0</span></button>
+            <button class="rail-btn" data-tab="cat-GENERAL"><span>General</span><span class="count" id="cnt-cat-GENERAL">0</span></button>
+            <button class="rail-btn" data-tab="cat-SPAM"><span>Spam</span><span class="count" id="cnt-cat-SPAM">0</span></button>
+        </div>
+
+        <div class="rail-group">
+            <p class="rail-label">System</p>
+            <button class="rail-btn" data-tab="diagnostics"><span>Diagnostics</span></button>
+            <button class="rail-btn" data-tab="architecture"><span>AI &amp; cloud</span></button>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h2 id="page-title">All emails</h2>
+                <p id="page-sub">Load a submission to begin.</p>
+            </div>
+            <div class="loaders">
+                <label class="loader-btn" id="btn-sub">📄 submission.json<span class="tick">✓</span>
+                    <input type="file" id="file-sub" accept="application/json" />
+                </label>
+                <label class="loader-btn" id="btn-inbox">📥 inbox emails<span class="tick">✓</span>
+                    <input type="file" id="file-inbox" accept="application/json" multiple webkitdirectory />
+                </label>
+                <label class="loader-btn" id="btn-gt">🔑 ground_truth.json<span class="tick">✓</span>
+                    <input type="file" id="file-gt" accept="application/json" />
+                </label>
+            </div>
+        </div>
+
+        <div class="summary" id="summary">
+            <div class="cell"><div class="num" id="sum-total">0</div><div class="lbl">Emails processed</div></div>
+            <div class="cell rust"><div class="num" id="sum-mismatch">0</div><div class="lbl">Mismatches found</div></div>
+            <div class="cell amber"><div class="num" id="sum-review">0</div><div class="lbl">Escalated for review</div></div>
+            <div class="cell teal"><div class="num" id="sum-urgent">0</div><div class="lbl">Flagged urgent</div></div>
+        </div>
+
+        <div class="search"><input type="text" id="search" placeholder="Search by email ID or subject…"></div>
+
+        <div id="list"></div>
+        <div id="diagnostics-view" style="display:none"></div>
+        <div id="architecture-view" style="display:none"></div>
+    </main>
+
+</div>
+
+<script>
+    "use strict";
+
+    const CATEGORIES = ["BL_COMPARISON","SI_REQUEST","INVOICE_QUERY","GENERAL","SPAM"];
+    const REVIEW_REASONS = ["wrong_doc_type","missing_attachment","unreadable","missing_value"];
+    const CAT_LABEL = {BL_COMPARISON:"BL comparison", SI_REQUEST:"SI request", INVOICE_QUERY:"Invoice query", GENERAL:"General", SPAM:"Spam"};
+
+    const state = { submission: {}, emails: {}, groundTruth: null, tab: "all", query: "" };
+
+    // ---------------- file loading ----------------
+    function markLoaded(id){ document.getElementById(id).classList.add("loaded"); }
+
+    document.getElementById("file-sub").addEventListener("change", async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      try {
+        state.submission = JSON.parse(await f.text());
+        markLoaded("btn-sub");
+        renderAll();
+      } catch (err) { alert("Couldn't read submission.json: " + err.message); }
+    });
+
+    document.getElementById("file-inbox").addEventListener("change", async (e) => {
+      const files = Array.from(e.target.files).filter(f => f.name.startsWith("email_") && f.name.endsWith(".json"));
+      if (!files.length) { alert("No email_*.json files found in that selection."); return; }
+      let ok = 0;
+      for (const f of files) {
+        try {
+          const rec = JSON.parse(await f.text());
+          if (rec.email_id) { state.emails[rec.email_id] = rec; ok++; }
+        } catch (_) { /* skip unreadable file */ }
+      }
+      markLoaded("btn-inbox");
+      renderAll();
+    });
+
+    document.getElementById("file-gt").addEventListener("change", async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      try {
+        state.groundTruth = JSON.parse(await f.text());
+        markLoaded("btn-gt");
+        renderAll();
+      } catch (err) { alert("Couldn't read ground_truth.json: " + err.message); }
+    });
+
+    document.getElementById("search").addEventListener("input", (e) => { state.query = e.target.value.toLowerCase(); renderList(); });
+
+    // ---------------- nav ----------------
+    document.querySelectorAll(".rail-btn[data-tab]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".rail-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.tab = btn.dataset.tab;
+        renderAll();
+      });
+    });
+
+    // ---------------- derived data ----------------
+    function entries(){
+      return Object.keys(state.submission).map(id => ({ id, sub: state.submission[id], email: state.emails[id] || null }));
+    }
+
+    function filteredEntries(){
+      let list = entries();
+      if (state.tab === "urgent") list = list.filter(e => e.sub.urgency === "urgent");
+      else if (state.tab === "review") list = list.filter(e => e.sub.status === "NEEDS_REVIEW");
+      else if (state.tab.startsWith("cat-")) { const c = state.tab.slice(4); list = list.filter(e => e.sub.category === c); }
+      if (state.query) {
+        list = list.filter(e => e.id.toLowerCase().includes(state.query) ||
+          (e.email && (e.email.subject||"").toLowerCase().includes(state.query)));
+      }
+      return list;
+    }
+
+    // ---------------- render: shell ----------------
+    function renderAll(){
+      renderCounts();
+      renderSummary();
+      const list = document.getElementById("list");
+      const diag = document.getElementById("diagnostics-view");
+      const arch = document.getElementById("architecture-view");
+      const search = document.getElementById("search").parentElement;
+      const summary = document.getElementById("summary");
+
+      if (state.tab === "diagnostics") {
+        list.style.display = "none"; search.style.display = "none"; summary.style.display = "grid";
+        diag.style.display = "block"; arch.style.display = "none";
+        document.getElementById("page-title").textContent = "Diagnostics";
+        document.getElementById("page-sub").textContent = "Auto-computed accuracy, category mix, and likely misclassifications.";
+        renderDiagnostics();
+      } else if (state.tab === "architecture") {
+        list.style.display = "none"; search.style.display = "none"; summary.style.display = "none";
+        diag.style.display = "none"; arch.style.display = "block";
+        document.getElementById("page-title").textContent = "AI & cloud";
+        document.getElementById("page-sub").textContent = "Where the model runs and where this pipeline is hosted.";
+        renderArchitecture();
+      } else {
+        diag.style.display = "none"; arch.style.display = "none";
+        list.style.display = "block"; search.style.display = "block"; summary.style.display = "grid";
+        const titles = { all: "All emails", urgent: "Urgent", review: "Needs review" };
+        document.getElementById("page-title").textContent = titles[state.tab] || CAT_LABEL[state.tab.slice(4)] || "Emails";
+        document.getElementById("page-sub").textContent = Object.keys(state.submission).length
+          ? filteredEntries().length + " email(s) in this view"
+          : "Load a submission to begin.";
+        renderList();
+      }
+    }
+
+    function renderCounts(){
+      const list = entries();
+      document.getElementById("cnt-all").textContent = list.length;
+      document.getElementById("cnt-urgent").textContent = list.filter(e => e.sub.urgency === "urgent").length;
+      document.getElementById("cnt-review").textContent = list.filter(e => e.sub.status === "NEEDS_REVIEW").length;
+      CATEGORIES.forEach(c => {
+        const el = document.getElementById("cnt-cat-" + c);
+        if (el) el.textContent = list.filter(e => e.sub.category === c).length;
+      });
+    }
+
+    function renderSummary(){
+      const list = entries();
+      document.getElementById("sum-total").textContent = list.length;
+      document.getElementById("sum-mismatch").textContent = list.filter(e => e.sub.status === "MISMATCH").length;
+      document.getElementById("sum-review").textContent = list.filter(e => e.sub.status === "NEEDS_REVIEW").length;
+      document.getElementById("sum-urgent").textContent = list.filter(e => e.sub.urgency === "urgent").length;
+    }
+
+    // ---------------- render: list ----------------
+    function renderList(){
+      const container = document.getElementById("list");
+      if (!Object.keys(state.submission).length) {
+        container.innerHTML = `<div class="empty"><strong>No submission loaded yet</strong>Load submission.json using the button above to see classified emails here.</div>`;
+        return;
+      }
+      const items = filteredEntries();
+      if (!items.length) {
+        container.innerHTML = `<div class="empty"><strong>Nothing in this view</strong>Try a different tab or clear the search.</div>`;
+        return;
+      }
+      container.innerHTML = items.map(({id, sub, email}) => {
+        const subject = email ? escapeHtml(email.subject) : "(load inbox files to see subject)";
+        const tags = [];
+        if (sub.status === "MISMATCH" && sub.defect_fields && sub.defect_fields.length)
+          tags.push(...sub.defect_fields.map(f => `<span class="tag">${escapeHtml(f)}</span>`));
+        if (sub.status === "NEEDS_REVIEW" && sub.review_reason)
+          tags.push(`<span class="tag">${escapeHtml(sub.review_reason)}</span>`);
+        const detail = email ? `
+          <div class="detail">
+            <p class="from"><strong>${escapeHtml(email.from||"")}</strong></p>
+            <p>Attachments: ${(email.attachments||[]).length ? escapeHtml(email.attachments.join(", ")) : "none"}</p>
+            <pre>${escapeHtml(email.body||"")}</pre>
+          </div>` : `<div class="detail"><p>Load inbox files to see the full email body.</p></div>`;
+        return `<div class="row status-${sub.status}" data-id="${id}">
+          <div class="row-top">
+            <span class="row-id">${id}</span>
+            <span class="row-subject">${subject}</span>
+            <span class="badge cat">${CAT_LABEL[sub.category] || sub.category}</span>
+            <span class="badge ${sub.status}">${sub.status.replace("_"," ")}</span>
+            ${sub.urgency === "urgent" ? '<span class="badge urgent">urgent</span>' : ""}
+          </div>
+          ${tags.length ? `<div class="row-meta">${tags.join("")}</div>` : ""}
+          ${detail}
+        </div>`;
+      }).join("");
+
+      container.querySelectorAll(".row").forEach(row => {
+        row.addEventListener("click", () => row.classList.toggle("open"));
+      });
+    }
+
+    // ---------------- diagnostics ----------------
+    function prf(tp, fp, fn){
+      const p = (tp+fp) ? tp/(tp+fp) : 0;
+      const r = (tp+fn) ? tp/(tp+fn) : 0;
+      const f = (p+r) ? 2*p*r/(p+r) : 0;
+      return {p, r, f};
+    }
+
+    function renderDiagnostics(){
+      const el = document.getElementById("diagnostics-view");
+      if (!Object.keys(state.submission).length) {
+        el.innerHTML = `<div class="empty"><strong>Nothing to diagnose yet</strong>Load submission.json first.</div>`;
+        return;
+      }
+      const list = entries();
+
+      // distribution bars
+      const catCounts = {}; CATEGORIES.forEach(c => catCounts[c] = 0);
+      const statusCounts = {OK:0, MISMATCH:0, NEEDS_REVIEW:0};
+      const reasonCounts = {}; REVIEW_REASONS.forEach(r => reasonCounts[r] = 0);
+      list.forEach(({sub}) => {
+        if (catCounts[sub.category] !== undefined) catCounts[sub.category]++;
+        if (statusCounts[sub.status] !== undefined) statusCounts[sub.status]++;
+        if (sub.status === "NEEDS_REVIEW" && reasonCounts[sub.review_reason] !== undefined) reasonCounts[sub.review_reason]++;
+      });
+      const maxCat = Math.max(1, ...Object.values(catCounts));
+      const maxReason = Math.max(1, ...Object.values(reasonCounts));
+
+      let html = `<div class="diag-grid">
+        <div class="diag-card"><h4>Category mix</h4>${bars(catCounts, maxCat, "var(--slate)")}</div>
+        <div class="diag-card"><h4>Status mix</h4>
+          ${bars(statusCounts, list.length||1, function(k){ return k==="OK"?"var(--teal)":k==="MISMATCH"?"var(--rust)":"var(--amber)"; })}
+        </div>
+        <div class="diag-card"><h4>Needs-review reasons</h4>${bars(reasonCounts, maxReason, "var(--amber)")}</div>
+      </div>`;
+
+      if (!state.groundTruth) {
+        html += `<div class="empty"><strong>Load ground_truth.json for accuracy &amp; likely-wrong list</strong>
+          Distribution stats above don't need it, but per-category accuracy, escalation recall, and the "predicted vs actual" review list do.</div>`;
+        el.innerHTML = html;
+        return;
+      }
+
+      // score against ground truth, mirroring scoring.py
+      const gt = state.groundTruth;
+      const gtIds = Object.keys(gt);
+      let correct = 0;
+      const per = {}; CATEGORIES.forEach(c => per[c] = {tp:0, fp:0, fn:0});
+      const mistakes = [];
+
+      let s3tp=0, s3fp=0, s3fn=0, ftp=0, ffp=0, ffn=0, docTotal=0, exact=0;
+      let relTp=0, relFn=0, relCorrect=0, predReview=0, goldReview=0;
+      let e2eTotal=0, e2eSuccess=0;
+
+      gtIds.forEach(id => {
+        const t = gt[id];
+        const s = state.submission[id] || {category:"GENERAL", status:"OK", defect_fields:[], has_defect:false, review_reason:null};
+        const actual = t.category, pred = s.category || "GENERAL";
+        if (pred === actual) { correct++; per[actual].tp++; } else {
+          per[actual].fn++; if (per[pred]) per[pred].fp++;
+          mistakes.push({id, predCat: pred, actCat: actual, predStatus: s.status, actStatus: t.status});
+        }
+
+        if (t.category === "BL_COMPARISON" && t.status !== "NEEDS_REVIEW") {
+          docTotal++;
+          const routed = s.category === "BL_COMPARISON";
+          const predDefect = !!s.has_defect && routed;
+          const predFields = new Set(routed ? (s.defect_fields||[]) : []);
+          const goldFields = new Set(t.defect_fields||[]);
+          if (t.has_defect && predDefect) s3tp++; else if (t.has_defect && !predDefect) s3fn++; else if (!t.has_defect && predDefect) s3fp++;
+          const same = predFields.size===goldFields.size && [...goldFields].every(f=>predFields.has(f));
+          if (same) exact++;
+          predFields.forEach(f => { if (goldFields.has(f)) ftp++; else ffp++; });
+          goldFields.forEach(f => { if (!predFields.has(f)) ffn++; });
+        }
+
+        const predNeeds = s.status === "NEEDS_REVIEW";
+        const goldNeeds = t.status === "NEEDS_REVIEW";
+        if (predNeeds) { predReview++; if (goldNeeds) relCorrect++; }
+        if (goldNeeds) { goldReview++; if (predNeeds) relTp++; else relFn++; }
+
+        if (t.category === "BL_COMPARISON" && t.has_defect) {
+          e2eTotal++;
+          const routed = s.category === "BL_COMPARISON";
+          const flagged = !!s.has_defect;
+          const goldFields = new Set(t.defect_fields||[]);
+          const predFields = new Set(s.defect_fields||[]);
+          const fieldsOk = predFields.size===goldFields.size && [...goldFields].every(f=>predFields.has(f));
+          if (routed && flagged && fieldsOk) e2eSuccess++;
+        }
+      });
+
+      const accuracy = gtIds.length ? correct/gtIds.length : 0;
+      let macroF1 = 0; CATEGORIES.forEach(c => macroF1 += prf(per[c].tp, per[c].fp, per[c].fn).f); macroF1 /= CATEGORIES.length;
+      const s3 = prf(s3tp, s3fp, s3fn);
+      const fieldF1 = prf(ftp, ffp, ffn).f;
+      const relRecall = goldReview ? relTp/goldReview : 0;
+      const relPrecision = predReview ? relCorrect/predReview : 0;
+      const e2eRate = e2eTotal ? e2eSuccess/e2eTotal : 0;
+      const finalScore = 0.30*macroF1 + 0.20*s3.f + 0.50*e2eRate;
+
+      html += `<div class="diag-grid">
+        <div class="diag-card"><h4>Final score (mirrors score_cli.py)</h4>
+          <div class="score-big">${finalScore.toFixed(3)}</div>
+          <div class="score-sub">0.30×stage1 F1 + 0.20×stage3 F1 + 0.50×end-to-end</div></div>
+        <div class="diag-card"><h4>Stage 1 · classification</h4>
+          <p style="margin:2px 0;font-size:13px">Accuracy <strong>${accuracy.toFixed(3)}</strong></p>
+          <p style="margin:2px 0;font-size:13px">Macro-F1 <strong>${macroF1.toFixed(3)}</strong></p></div>
+        <div class="diag-card"><h4>Stage 3 · SI vs BL comparison</h4>
+          <p style="margin:2px 0;font-size:13px">Defect recall <strong>${s3.r.toFixed(3)}</strong></p>
+          <p style="margin:2px 0;font-size:13px">Defect precision <strong>${s3.p.toFixed(3)}</strong></p>
+          <p style="margin:2px 0;font-size:13px">Field-level F1 <strong>${fieldF1.toFixed(3)}</strong></p></div>
+        <div class="diag-card"><h4>Reliability · escalation (diagnostic only)</h4>
+          <p style="margin:2px 0;font-size:13px">Recall <strong>${relRecall.toFixed(3)}</strong> (${relTp}/${goldReview} caught)</p>
+          <p style="margin:2px 0;font-size:13px">Precision <strong>${relPrecision.toFixed(3)}</strong></p></div>
+      </div>`;
+
+      html += `<div class="diag-card">
+        <h4>Likely misclassifications — predicted vs actual (${mistakes.length} of ${gtIds.length})</h4>
+        ${mistakes.length ? `<div style="max-height:340px;overflow-y:auto">
+          <table class="diff"><thead><tr><th>Email</th><th>Predicted category</th><th>Actual category</th><th>Predicted status</th><th>Actual status</th></tr></thead>
+          <tbody>${mistakes.slice(0,200).map(m => `<tr><td>${m.id}</td><td>${CAT_LABEL[m.predCat]||m.predCat}</td><td>${CAT_LABEL[m.actCat]||m.actCat}</td><td>${m.predStatus}</td><td>${m.actStatus}</td></tr>`).join("")}</tbody>
+          </table>${mistakes.length>200 ? `<p class="hint">and ${mistakes.length-200} more…</p>` : ""}
+        </div>` : `<p class="hint">No misclassifications found — every email's category matched ground truth.</p>`}
+      </div>`;
+
+      el.innerHTML = html;
+    }
+
+    function bars(counts, max, colorFn){
+      return Object.keys(counts).map(k => {
+        const n = counts[k];
+        const color = typeof colorFn === "function" ? colorFn(k) : colorFn;
+        const label = CAT_LABEL[k] || k.replace("_"," ");
+        return `<div class="bar-row"><span class="bl">${label}</span><span class="bwrap"><span class="bfill" style="width:${max?Math.round(n/max*100):0}%;background:${color}"></span></span><span class="bn">${n}</span></div>`;
+      }).join("");
+    }
+
+    // ---------------- architecture / AI + cloud ----------------
+    function renderArchitecture(){
+      const saved = loadArchNotes();
+      const el = document.getElementById("architecture-view");
+      el.innerHTML = `
+        <div class="arch-section">
+          <h4>Where AI is used</h4>
+          <p class="arch-note">Every category label and every extracted shipment field in this dashboard comes from a live model call — nothing here is regex or a rules table.</p>
+          <div class="arch-row"><span class="k"><span class="arch-badge">Stage 1</span>Classification</span><span class="v">Claude (Anthropic API) reads each email's subject, body, and sender and assigns one of the 5 categories, plus an urgency flag — <code>classifier.py</code>.</span></div>
+          <div class="arch-row"><span class="k"><span class="arch-badge">Stage 2</span>Extraction</span><span class="v">Claude reads the SI and BL text and pulls out the 7 shipment fields, normalizing label synonyms ("Load Port" vs "Port of Loading") and flagging blank or wrong-type documents — <code>extractor.py</code>.</span></div>
+          <div class="arch-row"><span class="k"><span class="arch-badge">Deterministic</span>Comparison</span><span class="v">Field-by-field diffing is plain Python, not AI — <code>comparator.py</code> — so the same input always produces the same defect list.</span></div>
+        </div>
+
+        <div class="arch-section">
+          <h4>Where this runs</h4>
+          <p class="arch-note">Click any value to edit — saved in this browser only. Fill these in with your actual deployed URLs before presenting.</p>
+          <div class="arch-row"><span class="k">Pipeline backend</span><span class="v" contenteditable="true" data-key="backend">${saved.backend || "e.g. Render — FastAPI wrapping classifier / extractor / comparator"}</span></div>
+          <div class="arch-row"><span class="k">This dashboard</span><span class="v" contenteditable="true" data-key="frontend">${saved.frontend || "e.g. Vercel, or this published artifact link"}</span></div>
+          <div class="arch-row"><span class="k">Stored results</span><span class="v" contenteditable="true" data-key="db">${saved.db || "e.g. Supabase Postgres — emails, results, review log"}</span></div>
+          <div class="arch-row"><span class="k">Model</span><span class="v" contenteditable="true" data-key="model">${saved.model || "Claude Sonnet, via the Anthropic API"}</span></div>
+        </div>
+      `;
+      el.querySelectorAll('[contenteditable="true"]').forEach(node => {
+        node.addEventListener("blur", () => {
+          const notes = loadArchNotes();
+          notes[node.dataset.key] = node.textContent.trim();
+          saveArchNotes(notes);
+        });
+      });
+    }
+
+    function loadArchNotes(){
+      try { return JSON.parse(localStorage.getItem("sdoc_arch_notes") || "{}"); }
+      catch(_) { return {}; }
+    }
+    function saveArchNotes(notes){
+      try { localStorage.setItem("sdoc_arch_notes", JSON.stringify(notes)); }
+      catch(_) { /* storage unavailable; edits just won't persist across reloads */ }
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    }
+
+    renderAll();
+</script>
+</body>
+</html>
