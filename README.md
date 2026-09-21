@@ -20,7 +20,7 @@ Team Name: Git That Money
 - **Escalates to a human** when a field is genuinely missing, a document is unreadable, or the wrong document type was attached — it never guesses or silently defaults
 - **Ships with a control-tower dashboard**: category/urgency/review tabs, a drag-and-drop human review board, self-computed accuracy diagnostics, and an AI & Cloud usage panel
 
-See [REPORT.md](./REPORT.md) for the full technical writeup, challenges faced, and roadmap.
+See [REPORT.md](./Report.md) for the full technical writeup, challenges faced, and roadmap.
 
 ## Architecture
 
