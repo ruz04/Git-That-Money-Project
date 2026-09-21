@@ -99,8 +99,7 @@ We evaluate against the organizers' own weighted scoring formula:
 end-to-end exact-match rate`, computed by `score_cli.py` and mirrored live in our
 dashboard. Reliability (correctly escalating the 4 edge-case types rather than false-
 alarming) is tracked as a separate diagnostic axis, per the organizers' own scoring
-design. *[Insert your actual final-run numbers here once available: accuracy, macro-F1,
-defect F1, end-to-end rate, final score.]*
+design. 
 
 ## Scalability Plans
 
