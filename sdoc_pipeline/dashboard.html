@@ -9,22 +9,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-          --ink: #101826;
-          --ink-soft: #1B2636;
-          --paper: #EDEFEC;
+          --ink: #0B1626;
+          --ink-soft: #16243A;
+          --paper: #F1F2F0;
           --paper-card: #FFFFFF;
-          --line: #D8DBD6;
-          --text: #17202B;
+          --line: #DADDD9;
+          --text: #151E29;
           --text-dim: #5B6472;
-          --steel: #8B99AC;
-          --amber: #D9902E;
-          --amber-soft: #F6E6CB;
-          --teal: #3E8574;
-          --teal-soft: #DCEEE9;
-          --rust: #B8543C;
-          --rust-soft: #F3DED7;
-          --slate: #6B7684;
-          --slate-soft: #E5E8EA;
+          --steel: #8996A6;
+          --amber: #B98A3E;
+          --amber-soft: #F0E4CC;
+          --teal: #2F7A68;
+          --teal-soft: #DCEAE5;
+          --rust: #A6503A;
+          --rust-soft: #EEDBD3;
+          --slate: #67717E;
+          --slate-soft: #E6E8E6;
           --radius: 6px;
           --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
           --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -91,11 +91,11 @@
         .rail-brand { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
         .rail-brand .mark { font-size: 20px; }
         .rail-brand h1 {
-          font-family: var(--font-display);
-          font-size: 18px;
-          font-weight: 600;
+          font-family: var(--font-body);
+          font-size: 17px;
+          font-weight: 700;
           margin: 0;
-          letter-spacing: 0.2px;
+          letter-spacing: 0.1px;
         }
         .rail-sub { font-size: 11.5px; color: #8090A3; margin: 0 0 22px; }
 
@@ -123,7 +123,7 @@
           display: flex; align-items: flex-end; justify-content: space-between;
           gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
         }
-        .topbar h2 { font-family: var(--font-display); font-size: 24px; margin: 0; font-weight: 600; }
+        .topbar h2 { font-family: var(--font-body); font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -0.1px; }
         .topbar p { margin: 2px 0 0; color: var(--text-dim); font-size: 13.5px; }
 
         .loaders { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -193,6 +193,38 @@
 
         .hint { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
 
+        /* ---------- human review board (drag & drop) ---------- */
+        .review-note { font-size: 12px; color: var(--text-dim); margin: 0 0 14px; }
+        .review-board { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 14px; align-items: start; }
+        .review-col { background: var(--paper-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; min-height: 120px; }
+        .review-col h5 { margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center; }
+        .review-col h5 .n { font-size: 11px; background: var(--slate-soft); color: var(--slate); padding: 1px 7px; border-radius: 999px; }
+        .review-col.drop-over { outline: 2px dashed var(--amber); outline-offset: -2px; background: var(--amber-soft); }
+        .review-col.confirmed h5 .n { background: var(--rust-soft); color: var(--rust); }
+        .review-col.resolved h5 .n { background: var(--teal-soft); color: var(--teal); }
+        .review-col.false_alarm h5 .n { background: var(--slate-soft); color: var(--slate); }
+
+        .rcard {
+          background: var(--paper); border: 1px solid var(--line); border-radius: 5px;
+          padding: 8px 10px; margin-bottom: 7px; cursor: grab; font-size: 12.5px;
+        }
+        .rcard:active { cursor: grabbing; }
+        .rcard .rcard-id { font-size: 10.5px; color: var(--text-dim); }
+        .rcard .rcard-subject { font-weight: 500; margin: 2px 0 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rcard .rcard-reason { display: inline-block; font-size: 10px; color: var(--amber); background: var(--amber-soft); padding: 1px 6px; border-radius: 4px; margin-bottom: 6px; }
+        .rcard .rcard-actions { display: flex; gap: 4px; }
+        .rcard .rcard-actions button {
+          flex: 1; font-size: 10.5px; padding: 3px 4px; border-radius: 4px; border: 1px solid var(--line);
+          background: var(--paper-card); cursor: pointer; color: var(--text-dim);
+        }
+        .rcard .rcard-actions button:hover { border-color: var(--steel); color: var(--text); }
+        .rcard.decided { opacity: 0.9; }
+        .rcard.decided .rcard-undo { font-size: 10.5px; color: var(--text-dim); background: none; border: none; cursor: pointer; padding: 0; text-decoration: underline; }
+
+        @media (max-width: 900px) {
+          .review-board { grid-template-columns: 1fr; }
+        }
+
         /* ---------- diagnostics ---------- */
         .diag-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; margin-bottom: 20px; }
         .diag-card { background: var(--paper-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
@@ -213,7 +245,7 @@
 
         /* ---------- architecture / AI+cloud panel ---------- */
         .arch-section { background: var(--paper-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 14px; }
-        .arch-section h4 { font-family: var(--font-display); font-size: 15px; margin: 0 0 4px; }
+        .arch-section h4 { font-family: var(--font-body); font-weight: 700; font-size: 14.5px; margin: 0 0 4px; }
         .arch-section .arch-note { font-size: 12px; color: var(--text-dim); margin: 0 0 12px; }
         .arch-row { display: flex; gap: 14px; padding: 8px 0; border-top: 1px solid var(--line); align-items: baseline; flex-wrap: wrap; }
         .arch-row:first-of-type { border-top: none; }
@@ -290,6 +322,7 @@
         <div class="search"><input type="text" id="search" placeholder="Search by email ID or subject…"></div>
 
         <div id="list"></div>
+        <div id="review-view" style="display:none"></div>
         <div id="diagnostics-view" style="display:none"></div>
         <div id="architecture-view" style="display:none"></div>
     </main>
@@ -303,7 +336,7 @@
     const REVIEW_REASONS = ["wrong_doc_type","missing_attachment","unreadable","missing_value"];
     const CAT_LABEL = {BL_COMPARISON:"BL comparison", SI_REQUEST:"SI request", INVOICE_QUERY:"Invoice query", GENERAL:"General", SPAM:"Spam"};
 
-    const state = { submission: {}, emails: {}, groundTruth: null, tab: "all", query: "" };
+    const state = { submission: {}, emails: {}, groundTruth: null, tab: "all", query: "", reviewDecisions: loadReviewDecisions() };
 
     // ---------------- file loading ----------------
     function markLoaded(id){ document.getElementById(id).classList.add("loaded"); }
@@ -374,27 +407,35 @@
       renderCounts();
       renderSummary();
       const list = document.getElementById("list");
+      const reviewView = document.getElementById("review-view");
       const diag = document.getElementById("diagnostics-view");
       const arch = document.getElementById("architecture-view");
       const search = document.getElementById("search").parentElement;
       const summary = document.getElementById("summary");
 
+      list.style.display = "none"; reviewView.style.display = "none";
+      diag.style.display = "none"; arch.style.display = "none";
+      search.style.display = "none"; summary.style.display = "grid";
+
       if (state.tab === "diagnostics") {
-        list.style.display = "none"; search.style.display = "none"; summary.style.display = "grid";
-        diag.style.display = "block"; arch.style.display = "none";
+        diag.style.display = "block";
         document.getElementById("page-title").textContent = "Diagnostics";
         document.getElementById("page-sub").textContent = "Auto-computed accuracy, category mix, and likely misclassifications.";
         renderDiagnostics();
       } else if (state.tab === "architecture") {
-        list.style.display = "none"; search.style.display = "none"; summary.style.display = "none";
-        diag.style.display = "none"; arch.style.display = "block";
+        summary.style.display = "none";
+        arch.style.display = "block";
         document.getElementById("page-title").textContent = "AI & cloud";
         document.getElementById("page-sub").textContent = "Where the model runs and where this pipeline is hosted.";
         renderArchitecture();
+      } else if (state.tab === "review") {
+        reviewView.style.display = "block";
+        document.getElementById("page-title").textContent = "Needs review";
+        document.getElementById("page-sub").textContent = "Drag a case into a column, or use its buttons.";
+        renderReviewBoard();
       } else {
-        diag.style.display = "none"; arch.style.display = "none";
-        list.style.display = "block"; search.style.display = "block"; summary.style.display = "grid";
-        const titles = { all: "All emails", urgent: "Urgent", review: "Needs review" };
+        list.style.display = "block"; search.style.display = "block";
+        const titles = { all: "All emails", urgent: "Urgent" };
         document.getElementById("page-title").textContent = titles[state.tab] || CAT_LABEL[state.tab.slice(4)] || "Emails";
         document.getElementById("page-sub").textContent = Object.keys(state.submission).length
           ? filteredEntries().length + " email(s) in this view"
@@ -407,7 +448,8 @@
       const list = entries();
       document.getElementById("cnt-all").textContent = list.length;
       document.getElementById("cnt-urgent").textContent = list.filter(e => e.sub.urgency === "urgent").length;
-      document.getElementById("cnt-review").textContent = list.filter(e => e.sub.status === "NEEDS_REVIEW").length;
+      const pendingReview = list.filter(e => e.sub.status === "NEEDS_REVIEW" && !state.reviewDecisions[e.id]).length;
+      document.getElementById("cnt-review").textContent = pendingReview;
       CATEGORIES.forEach(c => {
         const el = document.getElementById("cnt-cat-" + c);
         if (el) el.textContent = list.filter(e => e.sub.category === c).length;
@@ -465,6 +507,121 @@
       });
     }
 
+    // ---------------- human review board ----------------
+    function reviewEntries(){
+      return entries().filter(e => e.sub.status === "NEEDS_REVIEW");
+    }
+
+    function renderReviewBoard(){
+      const el = document.getElementById("review-view");
+      const all = reviewEntries();
+      if (!all.length) {
+        el.innerHTML = Object.keys(state.submission).length
+          ? `<div class="empty"><strong>Nothing needs review</strong>No NEEDS_REVIEW cases in this submission.</div>`
+          : `<div class="empty"><strong>No submission loaded yet</strong>Load submission.json to see escalated cases here.</div>`;
+        return;
+      }
+      const pending = all.filter(e => !state.reviewDecisions[e.id]);
+      const byDecision = { confirmed: [], resolved: [], false_alarm: [] };
+      all.forEach(e => { const d = state.reviewDecisions[e.id]; if (d && byDecision[d.decision]) byDecision[d.decision].push(e); });
+
+      const card = (e, decided) => {
+        const subject = e.email ? escapeHtml(e.email.subject) : "(load inbox files for subject)";
+        const actions = decided
+          ? `<button class="rcard-undo" data-undo="${e.id}">Undo — send back to pending</button>`
+          : `<div class="rcard-actions">
+              <button data-assign="${e.id}" data-decision="confirmed">✓ Confirm</button>
+              <button data-assign="${e.id}" data-decision="resolved">🛠 Resolve</button>
+              <button data-assign="${e.id}" data-decision="false_alarm">✕ False alarm</button>
+            </div>`;
+        return `<div class="rcard${decided ? " decided" : ""}" draggable="true" data-id="${e.id}">
+          <div class="rcard-id">${e.id}</div>
+          <div class="rcard-subject">${subject}</div>
+          ${e.sub.review_reason ? `<span class="rcard-reason">${escapeHtml(e.sub.review_reason)}</span>` : ""}
+          ${actions}
+        </div>`;
+      };
+
+      el.innerHTML = `
+        <p class="review-note">Drag a card into a column below, or tap its buttons on mobile. "Undo" sends it back to Pending. Decisions save automatically in this browser.</p>
+        <div class="review-board">
+          <div class="review-col" data-zone="pending">
+            <h5>Pending<span class="n">${pending.length}</span></h5>
+            ${pending.map(e => card(e, false)).join("") || '<p class="hint">All caught up.</p>'}
+          </div>
+          <div class="review-col confirmed" data-zone="confirmed">
+            <h5>Confirmed — real issue<span class="n">${byDecision.confirmed.length}</span></h5>
+            ${byDecision.confirmed.map(e => card(e, true)).join("") || '<p class="hint">Drop here to confirm.</p>'}
+          </div>
+          <div class="review-col resolved" data-zone="resolved">
+            <h5>Resolved — corrected<span class="n">${byDecision.resolved.length}</span></h5>
+            ${byDecision.resolved.map(e => card(e, true)).join("") || '<p class="hint">Drop here once fixed.</p>'}
+          </div>
+          <div class="review-col false_alarm" data-zone="false_alarm">
+            <h5>False alarm<span class="n">${byDecision.false_alarm.length}</span></h5>
+            ${byDecision.false_alarm.map(e => card(e, true)).join("") || '<p class="hint">Drop here if nothing was wrong.</p>'}
+          </div>
+        </div>
+      `;
+
+      // Button fallback -- also the primary path on touch devices, where native
+      // drag events are unreliable. Never rely on drag alone.
+      el.querySelectorAll("[data-assign]").forEach(btn => {
+        btn.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          assignDecision(btn.dataset.assign, btn.dataset.decision);
+        });
+      });
+      el.querySelectorAll("[data-undo]").forEach(btn => {
+        btn.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          undoDecision(btn.dataset.undo);
+        });
+      });
+
+      // Drag source
+      el.querySelectorAll(".rcard").forEach(rc => {
+        rc.addEventListener("dragstart", (ev) => {
+          ev.dataTransfer.setData("text/plain", rc.dataset.id);
+        });
+      });
+
+      // Drop targets
+      el.querySelectorAll(".review-col").forEach(col => {
+        col.addEventListener("dragover", (ev) => { ev.preventDefault(); col.classList.add("drop-over"); });
+        col.addEventListener("dragleave", () => col.classList.remove("drop-over"));
+        col.addEventListener("drop", (ev) => {
+          ev.preventDefault();
+          col.classList.remove("drop-over");
+          const id = ev.dataTransfer.getData("text/plain");
+          const zone = col.dataset.zone;
+          if (zone === "pending") undoDecision(id);
+          else assignDecision(id, zone);
+        });
+      });
+    }
+
+    function assignDecision(id, decision){
+      state.reviewDecisions[id] = { decision, at: new Date().toISOString() };
+      saveReviewDecisions();
+      renderAll();
+    }
+
+    function undoDecision(id){
+      delete state.reviewDecisions[id];
+      saveReviewDecisions();
+      renderAll();
+    }
+
+    function loadReviewDecisions(){
+      try { return JSON.parse(localStorage.getItem("sdoc_review_decisions") || "{}"); }
+      catch(_) { return {}; }
+    }
+    function saveReviewDecisions(){
+      try { localStorage.setItem("sdoc_review_decisions", JSON.stringify(state.reviewDecisions)); }
+      catch(_) { /* storage unavailable; decisions just won't persist across reloads */ }
+    }
+
     // ---------------- diagnostics ----------------
     function prf(tp, fp, fn){
       const p = (tp+fp) ? tp/(tp+fp) : 0;
@@ -499,6 +656,22 @@
           ${bars(statusCounts, list.length||1, function(k){ return k==="OK"?"var(--teal)":k==="MISMATCH"?"var(--rust)":"var(--amber)"; })}
         </div>
         <div class="diag-card"><h4>Needs-review reasons</h4>${bars(reasonCounts, maxReason, "var(--amber)")}</div>
+      </div>`;
+
+      const reviewAll = reviewEntries();
+      const decidedIds = Object.keys(state.reviewDecisions).filter(id => state.submission[id] && state.submission[id].status === "NEEDS_REVIEW");
+      const decCounts = { confirmed: 0, resolved: 0, false_alarm: 0 };
+      decidedIds.forEach(id => { const d = state.reviewDecisions[id]; if (decCounts[d.decision] !== undefined) decCounts[d.decision]++; });
+      const pendingCount = reviewAll.length - decidedIds.length;
+      html += `<div class="diag-grid">
+        <div class="diag-card"><h4>Human review activity</h4>
+          ${bars(
+            {Pending: pendingCount, Confirmed: decCounts.confirmed, Resolved: decCounts.resolved, "False alarm": decCounts.false_alarm},
+            Math.max(1, reviewAll.length),
+            function(k){ return k==="Pending"?"var(--amber)":k==="Confirmed"?"var(--rust)":k==="Resolved"?"var(--teal)":"var(--slate)"; }
+          )}
+          <p class="hint" style="margin-top:8px">${decidedIds.length} of ${reviewAll.length} escalated cases reviewed in this browser.</p>
+        </div>
       </div>`;
 
       if (!state.groundTruth) {
