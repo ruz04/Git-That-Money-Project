@@ -67,8 +67,8 @@ Open `dashboard.html` directly in a browser, or visit the deployed link below. L
 
 ## Cloud deployment
 
-- **Backend API**: `[fill in your Render URL]`
-- **Dashboard**: `[fill in your Vercel URL]`
+- **Backend API**: `https://git-that-money-project-1.onrender.com`
+- **Dashboard**: `https://git-that-money.vercel.app/`
 
 ## ⚠️ A note on `ground_truth.json`
 
