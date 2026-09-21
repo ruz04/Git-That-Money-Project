@@ -8,6 +8,8 @@ An AI-powered inbox triage system for shipping operations. It classifies incomin
 
 'GitHub Repository: https://github.com/ruz04/Git-That-Money-Project'
 
+'Slide Deck: https://canva.link/kjf8brfqq1gv0mf'
+
 - Members:
     - Ruzaiqa Naushad
     - Fariya Hossain
