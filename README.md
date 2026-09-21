@@ -18,7 +18,7 @@ Team Name: Git That Money
 - **Extracts** 7 shipment fields (shipper, consignee, notify party, port of loading, port of discharge, container count, gross weight) from SI and BL documents, normalizing label synonyms across documents (e.g. "Load Port" vs "Port of Loading")
 - **Compares** SI against BL deterministically — the diff step is plain Python, not AI, so the same input always produces the same result
 - **Escalates to a human** when a field is genuinely missing, a document is unreadable, or the wrong document type was attached — it never guesses or silently defaults
-- Ships with a control-tower dashboard: category/urgency/review tabs, a drag-and-drop human review board, self-computed accuracy diagnostics, and an AI & Cloud usage panel
+- **Ships with a control-tower dashboard**: category/urgency/review tabs, a drag-and-drop human review board, self-computed accuracy diagnostics, and an AI & Cloud usage panel
 
 See [REPORT.md](./REPORT.md) for the full technical writeup, challenges faced, and roadmap.
 
