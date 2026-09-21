@@ -1,0 +1,5 @@
+sdoc_pipeline/.env
+.idea/
+__pycache__/
+**/ground_truth.json
+sdoc_pipeline/data_v2/*.py

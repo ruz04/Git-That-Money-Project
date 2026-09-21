@@ -46,6 +46,15 @@ app = FastAPI(title="SDOC Hackathon Inbox", version="2.0",
               description="Serves the shipping-docs inbox and scores submissions. "
                           "Ground truth is held privately and never served.")
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],   # these endpoints are public by design; ground truth is never served
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
 
 # --------------------------------------------------------------------------
 # helpers
