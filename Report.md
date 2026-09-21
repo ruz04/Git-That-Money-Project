@@ -1,4 +1,4 @@
-# Technical Report — SDOC Control Tower
+# Technical Report — ClasseE - SDOC Control Tower
 
 This document covers the technical architecture, implementation, and written-response
 topics required for submission. Each section below is written to be copyable
@@ -17,7 +17,7 @@ Email inbox → Classifier (Claude) → Extractor (Claude) → Comparator (Pytho
                                                     NEEDS_REVIEW → Human Review Board
 ```
 
-- **Frontend**: a single static dashboard (`dashboard.html`), deployed on Vercel — no
+- **Frontend**: a single static dashboard (`index.html`), deployed on Vercel — no
   build step, no framework, reads its data client-side from JSON files or the backend API.
 - **Backend**: a FastAPI service (`app.py`) wrapping the pipeline, deployed on Render.
   Exposes `/run`, `/submission`, and a locally-scoped `/score` endpoint.
@@ -29,18 +29,21 @@ Email inbox → Classifier (Claude) → Extractor (Claude) → Comparator (Pytho
 
 ## Implementation Details
 
-Each email is classified into one of 5 categories using real coded subject-line
-patterns as few-shot grounding, independent of whether attachments are present (a
-`BL_COMPARISON` request with no attachment yet is still `BL_COMPARISON`). For
-comparison emails, the SI and BL attachments are each read and their 7 shipment
-fields extracted, with the extractor explicitly normalizing label synonyms (e.g. "Load
-Port" vs "Port of Loading (POL)" vs "POL") and recognizing deliberate blank-value
-tokens (`???`, `TBA`, `N/A`, etc.) as missing data rather than literal values. Before
-comparison, the pipeline checks, in order: whether both an SI and BL attachment exist,
-whether each is readable, and whether each is actually the expected document type —
-routing to one of four specific escalation reasons if not. Only once a case passes all
-of these does the deterministic comparator run, checking each of the 7 fields with
-numeric-aware, formatting-tolerant equality.
+Each email is classified into one of 5 categories using real coded subject-line patterns as 
+few-shot grounding, independent of whether attachments are present (a BL_COMPARISON request 
+with no attachment yet is still BL_COMPARISON). To ensure optimal data quality prior to 
+analysis, the system routes all incoming text and metadata through an automated data cleaning 
+pipeline. For comparison emails, the SI and BL attachments are each read and their 7 shipment 
+fields extracted, with the extractor explicitly normalizing label synonyms (e.g. "Load Port" 
+vs "Port of Loading (POL)" vs "POL") and recognizing deliberate blank-value tokens (???, TBA, 
+N/A, etc.) as missing data rather than literal values. Before comparison, the pipeline checks, 
+in order: whether both an SI and BL attachment exist, whether each is readable, and whether 
+each is actually the expected document type — routing to one of four specific escalation 
+reasons if not. Only once a case passes all of these does the deterministic comparator run, 
+checking each of the 7 fields with numeric-aware, formatting-tolerant equality. Furthermore, 
+cases flagged for manual intervention enter a human review panel featuring an internal 
+feedback loop, which logs human corrections to continuously improve and refine future 
+automated extractions.
 
 ## Problem–Solution Alignment
 
@@ -60,7 +63,7 @@ the backend pipeline is deployed on Render as a containerless Python web service
 (scales to zero when idle), and the dashboard is deployed on Vercel as a static site
 with global edge delivery. Secrets (the Anthropic API key) are managed via environment
 variables on the hosting platform, never committed to source control — enforced via
-`.gitignore` and a checked-in `.env.example` template.
+`.gitignore` and a checked-in `.env.example` template. Additionally, a 
 
 ## User Feedback / Testing
 
@@ -72,7 +75,7 @@ reliability behaviour this system is built around. Scoring is done via the organ
 Diagnostics tab for fast iteration. For the human-in-the-loop workflow specifically, we
 built and used the drag-and-drop review board ourselves during development to resolve
 escalated cases, and the dashboard tracks that review activity (pending / confirmed /
-resolved / false-alarm counts) as a lightweight internal feedback loop.
+resolved / false-alarm counts) as a lightweight internal feedback loop. 
 
 ## Coding Challenges
 

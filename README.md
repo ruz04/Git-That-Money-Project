@@ -1,8 +1,16 @@
-# SDOC Control Tower — Shipping Document Verification Pipeline
+# ClassE - SDOC Control Tower — Shipping Document Verification Pipeline
 
 **Averis x Monash Hackathon 2026**
 
 An AI-powered inbox triage system for shipping operations. It classifies incoming emails into 5 categories, automatically compares Shipping Instructions (SI) against draft Bills of Lading (BL), flags exact field-level mismatches, and escalates anything it can't confidently decide to a human — with a live drag-and-drop review board to resolve those cases.
+
+## Team Details
+
+Team Name: Git That Money
+Members:
+- Ruzaiqa Naushad
+- Fariya Hossain
+- Jeevika Akshaya
 
 ## What it does
 
