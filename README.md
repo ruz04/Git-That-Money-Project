@@ -7,10 +7,10 @@ An AI-powered inbox triage system for shipping operations. It classifies incomin
 ## Team Details
 
 Team Name: Git That Money
-Members:
-- Ruzaiqa Naushad
-- Fariya Hossain
-- Jeevika Akshaya
+- Members:
+  - Ruzaiqa Naushad
+  - Fariya Hossain
+  - Jeevika Akshaya
 
 ## What it does
 
@@ -29,15 +29,15 @@ Dashboard (Vercel)  →  Backend API (Render, FastAPI)  →  Claude (classify + 
                                                         →  Deterministic Python (compare)
 ```
 
-| Stage | File | Role |
-|---|---|---|
+| Stage | File            | Role |
+|---|-----------------|---|
 | Classification | `classifier.py` | Claude API call — categorizes each email, flags urgency |
-| Extraction | `extractor.py` | Claude API call — pulls the 7 fields, flags blanks and wrong document types |
+| Extraction | `extractor.py`  | Claude API call — pulls the 7 fields, flags blanks and wrong document types |
 | Comparison | `comparator.py` | Plain Python — deterministic field-by-field diff |
-| Escalation logic | `pipeline.py` | Orchestrates the above, decides OK / MISMATCH / NEEDS_REVIEW |
-| Output shaping | `reporter.py` | Builds the exact required submission schema |
-| API | `app.py` | Hosts the pipeline as a cloud service |
-| Dashboard | `dashboard.html` | Review + diagnostics UI |
+| Escalation logic | `pipeline.py`   | Orchestrates the above, decides OK / MISMATCH / NEEDS_REVIEW |
+| Output shaping | `reporter.py`   | Builds the exact required submission schema |
+| API | `app.py`        | Hosts the pipeline as a cloud service |
+| Dashboard | `index.html`    | Review + diagnostics UI |
 
 ## Setup instructions
 
