@@ -22,7 +22,7 @@ import json
 
 import anthropic
 from dotenv import load_dotenv
-from loader import Inbox  # the organizers' file -- copy it into this folder
+from loader import Inbox
 from pipeline import ShippingVerificationPipeline
 
 load_dotenv()  # reads .env if present in this folder; harmless if it's not
