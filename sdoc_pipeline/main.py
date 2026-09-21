@@ -19,24 +19,24 @@ with the organizers' CLI, without going through this script at all:
 
 import argparse
 import json
-import os
+
 import anthropic
-
-os.environ["ANTHROPIC_API_KEY"] = "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"
-
+from dotenv import load_dotenv
 from loader import Inbox  # the organizers' file -- copy it into this folder
 from pipeline import ShippingVerificationPipeline
+
+load_dotenv()  # reads .env if present in this folder; harmless if it's not
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", default="../data_v2",
-                         help="Path to data_v2/, or the running server's URL")
+                        help="Path to data_v2/, or the running server's URL")
     parser.add_argument("--out", default="submission.json")
     parser.add_argument("--submit", action="store_true",
-                         help="POST results to the server's /submit (HTTP source only)")
+                        help="POST results to the server's /submit (HTTP source only)")
     parser.add_argument("--limit", type=int, default=None,
-                         help="Only process the first N emails (useful while iterating)")
+                        help="Only process the first N emails (useful while iterating)")
     args = parser.parse_args()
 
     client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
