@@ -4,13 +4,14 @@
 
 An AI-powered inbox triage system for shipping operations. It classifies incoming emails into 5 categories, automatically compares Shipping Instructions (SI) against draft Bills of Lading (BL), flags exact field-level mismatches, and escalates anything it can't confidently decide to a human — with a live drag-and-drop review board to resolve those cases.
 
-## Team Details
+## Team: Git That Money 
 
-Team Name: Git That Money
+'GitHub Repository: https://github.com/ruz04/Git-That-Money-Project'
+
 - Members:
-  - Ruzaiqa Naushad
-  - Fariya Hossain
-  - Jeevika Akshaya
+    - Ruzaiqa Naushad
+    - Fariya Hossain
+    - Jeevika Akshaya
 
 ## What it does
 
@@ -82,6 +83,4 @@ Open `dashboard.html` directly in a browser, or visit the deployed link below. L
 
 This dataset's answer key must never be committed to this repository or deployed publicly — it is gitignored (`data_v2/ground_truth.json`) on purpose. Score locally only.
 
-## Team
 
-`[team name / member names]`
